@@ -1,10 +1,12 @@
 #ifndef __TRIENODE_C
 #define __TRIENODE_C
 
-// Copyright Seb Ramadan, 2009.
+// Copyright (c) 2009, Sebastian Ramadan. All rights reserved.
 /** \file TrieNode.c
  *  \brief Generic prefix TrieNode structures and functions for initializing/creating/finding/destroying generic prefix TrieNode instances.
  */
+
+struct TrieNode;
 
 typedef void (* Destroy)(struct TrieNode *value);
 typedef void (* Create)(struct TrieNode **Group, unsigned int GroupCount, unsigned char *Prefix, unsigned int PrefixLength, Destroy *Destroy);
@@ -16,14 +18,14 @@ void Trie_DestroyNode(struct TrieNode *Node);
 
 struct TrieNode {
     Destroy Destroy;
-
+    
     struct TrieNode **Group;
     unsigned int GroupCount;
- 
+    
     unsigned char *Prefix;
     unsigned int PrefixLength;
 };
- 
+
 struct TrieNode **Trie_CreateGroup() {
     struct TrieNode **g; g = malloc(256 * sizeof (*g));
     

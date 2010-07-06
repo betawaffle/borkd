@@ -1,7 +1,7 @@
 #ifndef __RELATIVETRIENODE_C
 #define __RELATIVETRIENODE_C
 
-// Copyright Seb Ramadan, 2009.
+// Copyright (c) 2009, Sebastian Ramadan. All rights reserved.
 /** \file RelativeTrieNode.c
  * \brief Extension of the TrieNode structure for storing Relatives (Parents, siblings, etc). Functions for initializing/creating/destroying nodes from the collection.
  */
@@ -60,5 +60,4 @@ struct RelativeTrieNode *RelativeTrie_CreateNode(struct RelativeTrieNode **Paren
 void RelativeTrie_DestroyNode(struct RelativeTrieNode *value) {
 
 }
-
 #endif
