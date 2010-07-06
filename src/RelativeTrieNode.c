@@ -21,9 +21,9 @@
  *  \extends TrieNode
  */
 struct RelativeTrieNode {
-	struct TrieNode Node;
-	struct RelativeTrieNode **Parent;
-	struct RelativeTrieNode **This;
+    struct TrieNode Node;
+    struct RelativeTrieNode **Parent;
+    struct RelativeTrieNode **This;
 };
 
 struct RelativeTrieNode *RelativeTrie_InitNode(struct RelativeTrieNode *Node, struct RelativeTrieNode **Parent, struct RelativeTrieNode **This);
@@ -38,12 +38,12 @@ void RelativeTrie_DestroyNode(struct RelativeTrieNode *value);
  *  \returns NULL indicates error. The first argument (\a Node) indicates success.
  */
 struct RelativeTrieNode *RelativeTrie_InitNode(struct RelativeTrieNode *Node, struct RelativeTrieNode **Parent, struct RelativeTrieNode **This) {
-	if (Node == NULL) { return NULL; }
-	
+    if (Node == NULL) { return NULL; }
+    
     Node->Parent = Parent;
-	Node->This = This;
-	
-	return *This = Node;
+    Node->This = This;
+    
+    return *This = Node;
 }
 
 /**
@@ -52,11 +52,11 @@ struct RelativeTrieNode *RelativeTrie_InitNode(struct RelativeTrieNode *Node, st
  *  \return NULL indicates an error. The return value shall be a pointer to the new RelativeTrieNode.
  */
 struct RelativeTrieNode *RelativeTrie_CreateNode(struct RelativeTrieNode **Parent) {
-	struct RelativeTrieNode **This = malloc(sizeof (*This));
-	
-	if (This == NULL) { return NULL; }
-	
-	return RelativeTrie_InitNode(malloc(sizeof (struct RelativeTrieNode)), Parent, This);
+    struct RelativeTrieNode **This = malloc(sizeof (*This));
+    
+    if (This == NULL) { return NULL; }
+    
+    return RelativeTrie_InitNode(malloc(sizeof (struct RelativeTrieNode)), Parent, This);
 }
 
 void RelativeTrie_DestroyNode(struct RelativeTrieNode *value) {

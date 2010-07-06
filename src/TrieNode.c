@@ -62,45 +62,45 @@ struct TrieNode *Trie_CreateNode(struct TrieNode **Group, unsigned int GroupCoun
  *  @return 1 if the item was successfully located. 0 otherwise.
  */
 unsigned int Trie_FindNearest(struct TrieNode *Root, unsigned char *Prefix, unsigned char *Charmap, struct TrieNode **Result, unsigned int *InputPrefixIndex, unsigned int *NodePrefixIndex) {
-	struct TrieNode *n = Root, **g;
-	unsigned char c, *s, /* *t, */ *u;
+    struct TrieNode *n = Root, **g;
+    unsigned char c, *s, /* *t, */ *u;
 
-	if (Root == NULL || Prefix == NULL || Charmap == NULL || Result == NULL || InputPrefixIndex == NULL || NodePrefixIndex == NULL) { return 0; }
+    if (Root == NULL || Prefix == NULL || Charmap == NULL || Result == NULL || InputPrefixIndex == NULL || NodePrefixIndex == NULL) { return 0; }
 
-	s = Prefix;
-	
-	while (c = Charmap[*s]) {
-		g = n->Group;
-		if (g == NULL) {
-			*Result = n;
-			*InputPrefixIndex = s - Prefix;
-			*NodePrefixIndex = 0 /* n->PrefixLength */;
-			return 0;
-		}
+    s = Prefix;
+    
+    while (c = Charmap[*s]) {
+        g = n->Group;
+        if (g == NULL) {
+            *Result = n;
+            *InputPrefixIndex = s - Prefix;
+            *NodePrefixIndex = 0 /* n->PrefixLength */;
+            return 0;
+        }
 
-		if (g[c] == NULL) {
-			*Result = n;
-			*InputPrefixIndex = s - Prefix;
-			*NodePrefixIndex = 0 /* n->PrefixLength */;
-			return 0;
-		}
+        if (g[c] == NULL) {
+            *Result = n;
+            *InputPrefixIndex = s - Prefix;
+            *NodePrefixIndex = 0 /* n->PrefixLength */;
+            return 0;
+        }
 
-		n = g[c];
-		for (u = n->Prefix; (c = Charmap[*s]) == *u && c; u++, s++);
+        n = g[c];
+        for (u = n->Prefix; (c = Charmap[*s]) == *u && c; u++, s++);
 
-		if (*u && c != *u) {
-			*Result = n;
-			*InputPrefixIndex = s - Prefix;
-			*NodePrefixIndex = u - n->Prefix;
-			return 0;
-		}
-	}
+        if (*u && c != *u) {
+            *Result = n;
+            *InputPrefixIndex = s - Prefix;
+            *NodePrefixIndex = u - n->Prefix;
+            return 0;
+        }
+    }
 
-	*Result = n;
-	*InputPrefixIndex = s - Prefix;
-	*NodePrefixIndex = 0;
-	
-	return 1;
+    *Result = n;
+    *InputPrefixIndex = s - Prefix;
+    *NodePrefixIndex = 0;
+    
+    return 1;
 }
 
 void Trie_DestroyNode(struct TrieNode *Node) {

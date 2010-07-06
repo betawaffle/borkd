@@ -11,26 +11,26 @@
 typedef int (* Event)(struct SockListNode *Node, unsigned char *Parsed, unsigned char *Unparsed, unsigned char *End);
 
 struct EventListNode {
-	struct EventListNode *Next;
-	Event Function;
+    struct EventListNode *Next;
+    Event Function;
 };
 
 struct EventListNode *EventList_CreateNode(struct EventListNode *Next, Event Function) {
-	struct EventListNode *Node;
+    struct EventListNode *Node;
 
-	if ((Node = malloc(sizeof(*Node))) == NULL) { return NULL; }
-	
-	Node->Next = Next;
-	Node->Function = Function;
+    if ((Node = malloc(sizeof(*Node))) == NULL) { return NULL; }
+    
+    Node->Next = Next;
+    Node->Function = Function;
 
-	return Node;
+    return Node;
 }
 
 void EventListNode_Raise(struct SockListNode *SockNode, struct EventListNode *EventNode, unsigned char *Parsed, unsigned char *Unparsed, unsigned char *End) {
-	if (EventNode == NULL) { return; }
-	if (EventNode->Function == NULL) { return; }
-	
-	EventNode->Function(SockNode, Parsed, Unparsed, End);
-	EventListNode_Raise(SockNode, EventNode->Next, Parsed, Unparsed, End);
+    if (EventNode == NULL) { return; }
+    if (EventNode->Function == NULL) { return; }
+    
+    EventNode->Function(SockNode, Parsed, Unparsed, End);
+    EventListNode_Raise(SockNode, EventNode->Next, Parsed, Unparsed, End);
 }
 #endif

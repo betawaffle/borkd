@@ -39,9 +39,9 @@ void EventTrie_DestroyNode(struct EventTrieNode *value);
  *  \returns NULL indicates error. The first argument (\a Node) indicates success.
  */
 struct EventTrieNode *EventTrie_InitNode(struct EventTrieNode *Node, struct EventListNode *EventList, struct RelativeTrieNode **Parent, struct RelativeTrieNode **This) {
-	if (Node == NULL) { return NULL; }
+    if (Node == NULL) { return NULL; }
     Node->EventList = EventList;
-	return (struct EventTrieNode *) RelativeTrie_InitNode((struct RelativeTrieNode *) Node, Parent, This);
+    return (struct EventTrieNode *) RelativeTrie_InitNode((struct RelativeTrieNode *) Node, Parent, This);
 }
 
 /**
@@ -58,9 +58,9 @@ struct EventTrieNode *EventTrie_CreateNode(struct EventListNode *EventList) {
 */
 
 struct EventTrieNode *EventTrie_CreateNode(struct EventListNode *EventList, struct RelativeTrieNode **Parent) {
-	struct RelativeTrieNode **This = malloc(sizeof (*This));
-	if (This == NULL) { return NULL; }
-	return EventTrie_InitNode(malloc(sizeof (struct EventTrieNode)), EventList, Parent, This);
+    struct RelativeTrieNode **This = malloc(sizeof (*This));
+    if (This == NULL) { return NULL; }
+    return EventTrie_InitNode(malloc(sizeof (struct EventTrieNode)), EventList, Parent, This);
 }
 
 /**
