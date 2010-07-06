@@ -1,9 +1,10 @@
 #ifndef __TRIENODE_C
 #define __TRIENODE_C
 
-// Copyright (c) 2009, Sebastian Ramadan. All rights reserved.
-/** \file TrieNode.c
- *  \brief Generic prefix TrieNode structures and functions for initializing/creating/finding/destroying generic prefix TrieNode instances.
+/* Copyright (c) 2010, Sebastian Ramadan and Andrew Hodges. All rights reserved. */
+/** 
+ * @file TrieNode.c
+ * @brief Generic prefix TrieNode structures and functions for initializing/creating/finding/destroying generic prefix TrieNode instances.
  */
 
 struct TrieNode;
@@ -52,13 +53,13 @@ struct TrieNode *Trie_CreateNode(struct TrieNode **Group, unsigned int GroupCoun
 
 /**
  *  Finds the node identified by the Charmap translation of Prefix, and stores it in Result. If the node can't be found, stores the closest potential parent node in Result instead.
- *  \param Root The root TrieNode to search.
- *  \param Prefix The path of the node to search for.
- *  \param Charmap The translation table used to convert Prefix ie. from lowercase to uppercase.
- *  \param Result A location that will store a pointer to the resulting node.
- *  \param InputPrefixIndex A location that will store the number of bytes parsed from Prefix.
- *  \param NodePrefixIndex A location that will store the number of bytes parsed from Result->Prefix.
- *  \return 1 if the item was successfully located. 0 otherwise.
+ *  @param Root The root TrieNode to search.
+ *  @param Prefix The path of the node to search for.
+ *  @param Charmap The translation table used to convert Prefix ie. from lowercase to uppercase.
+ *  @param Result A location that will store a pointer to the resulting node.
+ *  @param InputPrefixIndex A location that will store the number of bytes parsed from Prefix.
+ *  @param NodePrefixIndex A location that will store the number of bytes parsed from Result->Prefix.
+ *  @return 1 if the item was successfully located. 0 otherwise.
  */
 unsigned int Trie_FindNearest(struct TrieNode *Root, unsigned char *Prefix, unsigned char *Charmap, struct TrieNode **Result, unsigned int *InputPrefixIndex, unsigned int *NodePrefixIndex) {
 	struct TrieNode *n = Root, **g;

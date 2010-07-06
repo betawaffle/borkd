@@ -1,9 +1,11 @@
 #ifndef __EVENTLISTNODE_C
 #define __EVENTLISTNODE_C
 
-// Copyright (c) 2009, Sebastian Ramadan. All rights reserved.
-/** \file EventListNode.c
- *  \brief Function prototype definition (Event), and linked list structure (EventListNode) for defining/storing Event handler functions. Function for creating/initializing EventListNode instances.
+/* Copyright (c) 2010, Sebastian Ramadan and Andrew Hodges. All rights reserved. */
+/** 
+ * @file EventListNode.c
+ * @brief Function prototype definition (Event), and linked list structure (EventListNode) for defining/storing Event handler functions.
+ *        Function for creating/initializing EventListNode instances.
  */
 
 typedef int (* Event)(struct SockListNode *Node, unsigned char *Parsed, unsigned char *Unparsed, unsigned char *End);

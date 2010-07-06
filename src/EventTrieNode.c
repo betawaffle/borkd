@@ -1,9 +1,11 @@
 #ifndef __EVENTTRIENODE_C
 #define __EVENTTRIENODE_C
 
-// Copyright (c) 2010, Sebastian Ramadan. All rights reserved.
-/** \file EventTrieNode.c
- * \brief Extension of the TrieNode structure for storing Event handlers in the form of EventList structures (EventTrieNode). Functions for initializing/creating/adding/destroying nodes from the collection.
+/* Copyright (c) 2010, Sebastian Ramadan and Andrew Hodges. All rights reserved. */
+/** 
+ * @file EventTrieNode.c
+ * @brief Extension of the TrieNode structure for storing Event handlers in the form of EventList structures (EventTrieNode).
+ *        Functions for initializing/creating/adding/destroying nodes from the collection.
  */
 
 //#include "Charmap.c"
@@ -146,7 +148,8 @@ unsigned int EventTrie_AddNode(struct TrieNode *Parent, unsigned char *Prefix, u
             /* If we're at the end of the string, the scenario is adding "foo" to a collection that already contains "foobar"...
              * ... create an EventTrie to hold the event handler. */
             else {
-                t = e = EventTrie_CreateNode(NULL, parent);
+                e = EventTrie_CreateNode(NULL, parent); /* FIXME: */
+                t = (struct RelativeTrieNode *) e;
                 n = Trie_InitNode((struct TrieNode *) e, Trie_CreateGroup(), 1, p, NodeIndex, (Destroy) EventTrie_DestroyNode);
                 if (n == NULL) {
                     free(p);
