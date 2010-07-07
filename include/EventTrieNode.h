@@ -9,8 +9,9 @@
  *        Functions for initializing/creating/adding/destroying nodes from the collection.
  */
 
+#include "Common.h"
 #include "EventListNode.h"
-#include "RelativeTrieNode.h"
+#include "TrieNode.h"
 
 /**
  * @struct EventTrieNode
@@ -25,14 +26,14 @@ typedef struct EventTrieNode *EventTrieNode;
  * @param EventList The EventListNode to initialize \a Node to.
  * @returns NULL indicates error. The first argument (\a Node) indicates success.
  */
-EventTrieNode EventTrie_InitNode(EventTrieNode Node, EventListNode EventList, RelativeTrieNode *Parent, RelativeTrieNode *This);
+EventTrieNode EventTrieNode_Init(EventTrieNode Node, EventListNode EventList, TrieNode *Parent, TrieNode *This);
 
 /**
  * Creates an EventTrieNode, with \a EventList as it's value. Passes return value of malloc onto \ref EventTrie_InitNode.
  * @param EventList The EventListNode to initialize the node to.
  * @return NULL indicates an error. The return value shall be a pointer to the new IRCSockListNode.
  */
-EventTrieNode EventTrie_CreateNode(EventListNode EventList, RelativeTrieNode *Parent);
+EventTrieNode EventTrieNode_Create(EventListNode EventList, TrieNode *Parent);
 
 /**
  * Adds an Event handler \a Function record to an EventTrieNode collection. This function uses functionality from \ref Trie_FindNearest...
@@ -43,18 +44,20 @@ EventTrieNode EventTrie_CreateNode(EventListNode EventList, RelativeTrieNode *Pa
  * @return The number of characters parsed before the end of the \a Prefix was reached. 0 indicates that an error.
  * @warning Thread unsafe.
  */
+
+/* TODO: Not sure if Parent should actually be a TrieNodeBase here. I must refactor the rest before changing it. - Seb */
 unsigned int EventTrie_AddNode(TrieNode Parent, unsigned char *Prefix, unsigned char *Charmap, Event Function);
 
 /**
  * 
  */
-void EventTrie_DestroyNode(EventTrieNode Node);
+void EventTrieNode_Destroy(void *Node);
 
-#define EventTrieDestructorDefault ((TrieNodeDestructor) &EventTrie_DestroyNode)
+#define EventTrieNodeDestructor ((Destructor) &EventTrieNode_Destroy)
 
 /* TODO: Move This -- Andrew Hodges (07/07/2010) */
 struct EventTrieNode {
-    struct RelativeTrieNode Node; /* This is still a struct because it's not a pointer. DO NOT CHANGE! -- Andrew Hodges (07/07/2010) */
+    struct TrieNode Node; /* This is still a struct because it's not a pointer. DO NOT CHANGE! -- Andrew Hodges (07/07/2010) */
     EventListNode EventList;
 };
 

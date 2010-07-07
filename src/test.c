@@ -7,19 +7,20 @@
 
 #include "EventTrieNode.h"
 
-void IterateNodes(TrieNode root, void (*pre)(TrieNode, int), void (*post)(TrieNode, int), int depth) {
+void IterateNodes(TrieNodeBase root, void (*pre)(TrieNodeBase, int), void (*post)(TrieNodeBase, int), int depth) {
+    int  x; /* please leave variables at the top of their blocks, because some people use stupid-C89 compilers :P - Seb */
     if (pre != NULL) {
         pre(root, depth);
     }
     
-    int  x;
     for (x = 0; x < 256; x++) {
         if (root->Group[x] != NULL) {
-            RelativeTrieNode n = (void *) root->Group[x];
+            TrieNode n = (void *) root->Group[x];
             
-            assert(*n->Parent == (RelativeTrieNode) root);
-            
-            IterateNodes(root->Group[x], pre, post, depth + 1);
+            assert(*n->Parent == (TrieNode) root);
+            assert(depth < 1024);
+
+            IterateNodes((TrieNodeBase) n, pre, post, depth + 1);
         }
     }
     
@@ -28,17 +29,17 @@ void IterateNodes(TrieNode root, void (*pre)(TrieNode, int), void (*post)(TrieNo
     }
 }
 
-void PrintNode(TrieNode node, int depth) { assert(depth < 1024);
+void PrintNode(TrieNodeBase node, int depth) {
     int  x;
     for (x = 0; x < depth; x++) putchar(' ');
     
     printf("Prefix: %s\n", node->Prefix);
 }
 
-void FreeNode(TrieNode node, int depth) {
+void FreeNode(TrieNodeBase node, int depth) {
     /* FIXME: Memory leak here! */
     
-    free(node);
+    node->Destroy(node);
 }
 
 unsigned char DefaultCharmap[] = {
@@ -60,6 +61,7 @@ unsigned char DefaultCharmap[] = {
     '\xF0', '\xF1', '\xF2', '\xF3', '\xF4', '\xF5', '\xF6', '\xF7', '\xF8', '\xF9', '\xFA', '\xFB', '\xFC', '\xFD', '\xFE', '\xFF'
 };
 
+/*
 void foo(SockListNode Node, unsigned char *Parsed, unsigned char *Unparsed, unsigned char *End) {
     printf("foo called\n");
 }
@@ -75,16 +77,17 @@ void foobar(SockListNode Node, unsigned char *Parsed, unsigned char *Unparsed, u
 void foobard(SockListNode Node, unsigned char *Parsed, unsigned char *Unparsed, unsigned char *End) {
     printf("foobar'd called\n");
 }
+*/
 
 int main(const int argc, const char *argv[]) {
-    EventTrieNode TrieRoot;
+    TrieNode TrieRoot;
     char *str;
     
 #define TEST_START(i, name) printf("*** Test %d *** : %s\n\n", i, name);\
-    TrieRoot = (EventTrieNode) Trie_InitNode((TrieNode) RelativeTrie_CreateNode(NULL), Trie_CreateGroup(), 0, NULL, 0, RelativeTrieDestructorDefault)
+    TrieRoot = (TrieNode) TrieNodeBase_Init((TrieNodeBase) TrieNode_Create(NULL), TrieNodeBase_CreateGroup(), 0, NULL, 0, TrieNodeBaseDestructor)
 #define TEST(s) str = s; printf("Trie_AddNode(\"%s\"): %u\n", str, EventTrie_AddNode((TrieNode) TrieRoot, (unsigned char *) str, DefaultCharmap, (void *) str))
-#define TEST_END() IterateNodes((struct TrieNode *) TrieRoot, PrintNode, NULL, 0);\
-    IterateNodes((TrieNode) TrieRoot, NULL, FreeNode, 0);\
+#define TEST_END() IterateNodes((TrieNodeBase) TrieRoot, PrintNode, NULL, 0);\
+    IterateNodes((TrieNodeBase) TrieRoot, NULL, FreeNode, 0);\
     printf("-----\n\n")
     
     TEST_START(1, "Append");
@@ -164,17 +167,17 @@ int main(const int argc, const char *argv[]) {
     EventTrieNode item;
     unsigned int inputindex = 0, nodeindex = 0;
     
-    EventTrie_AddNode(TrieRoot, "BAR", DefaultCharmap, bar);
-    EventTrie_AddNode(TrieRoot, "FUBAR", DefaultCharmap, fubar);
-    EventTrie_AddNode(TrieRoot, "FOO", DefaultCharmap, foo);
-    EventTrie_AddNode(TrieRoot, "FOOBAR", DefaultCharmap, foobar);
+    TrieNode_Add(TrieRoot, "BAR", DefaultCharmap, bar);
+    TrieNode_Add(TrieRoot, "FUBAR", DefaultCharmap, fubar);
+    TrieNode_Add(TrieRoot, "FOO", DefaultCharmap, foo);
+    TrieNode_Add(TrieRoot, "FOOBAR", DefaultCharmap, foobar);
 
-    /* Fetching this item, yeh? ----------------------------------.
-     *                                                            vvvvvv */
-    int success; success = Trie_FindNearest((TrieNode) TrieRoot, "FOOBAR", DefaultCharmap, &item, &inputindex, &nodeindex);
+    /* Fetching this item, yeh? ----------------------------------------.
+     *                                                                vvvvvv */
+    int success; success = Trie_FindNearest((TrieNodeBase) TrieRoot, "FOOBAR", DefaultCharmap, (TrieNodeBase) &item, &inputindex, &nodeindex);
     if (success == 0) {
         printf("item was not found\n");
-    } else if (item->Node.Node.Destroy != EventTrie_DestroyNode) {
+    } else if (item->Node.Node.Destroy != EventTrieNode_Destroy) {
         printf("item does not contain events.");
     } else { /* Call the list of handlers that it contains. */
         EventListNode_Raise(NULL, item->EventList, NULL, NULL, NULL);

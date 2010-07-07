@@ -6,26 +6,26 @@
 
 #include "EventTrieNode.h"
 
-EventTrieNode EventTrie_InitNode(EventTrieNode Node, EventListNode EventList, RelativeTrieNode *Parent, RelativeTrieNode *This) {
+EventTrieNode EventTrieNode_Init(EventTrieNode Node, EventListNode EventList, TrieNode *Parent, TrieNode *This) {
     if (Node == NULL) { return NULL; }
     
     Node->EventList = EventList;
     
-    return (EventTrieNode) RelativeTrie_InitNode((RelativeTrieNode) Node, Parent, This);
+    return (EventTrieNode) TrieNode_Init((TrieNode) Node, Parent, This);
 }
 
-EventTrieNode EventTrie_CreateNode(EventListNode EventList, RelativeTrieNode *Parent) {
-    RelativeTrieNode *This = malloc(sizeof (*This));
+EventTrieNode EventTrieNode_Create(EventListNode EventList, TrieNode *Parent) {
+    TrieNode *This = malloc(sizeof (*This));
     
     if (This == NULL) { return NULL; }
     
-    return EventTrie_InitNode(malloc(sizeof(struct EventTrieNode)), EventList, Parent, This);
+    return EventTrieNode_Init(malloc(sizeof(struct EventTrieNode)), EventList, Parent, This);
 }
 
 unsigned int EventTrie_AddNode(TrieNode Parent, unsigned char *Prefix, unsigned char *Charmap, Event Function) {
-    RelativeTrieNode Result = NULL;
+    TrieNode Result = NULL;
     unsigned int PrefixIndex = 0, NodeIndex = 0;
-    unsigned int success = Trie_FindNearest(Parent, Prefix, Charmap, (TrieNode *) &Result, &PrefixIndex, &NodeIndex);
+    unsigned int success = Trie_FindNearest((TrieNodeBase) Parent, Prefix, Charmap, (TrieNodeBase *) &Result, &PrefixIndex, &NodeIndex);
     EventTrieNode e = (EventTrieNode) Result; 
     
     /* The aim of the following group of logic is to create a value node to store our value (the pointer to function, "function").
@@ -49,28 +49,29 @@ unsigned int EventTrie_AddNode(TrieNode Parent, unsigned char *Prefix, unsigned 
     
     if (success == 1) {
         /* situation i. The node already exists, whether it's as a branch node or as a value node... We need to check! */
-        if (Result->Node.Destroy != EventTrieDestructorDefault) {
+        if (Result->Node.Destroy != EventTrieNodeDestructor) {
             /* Branch node (needs to be converted to value node) */
-            RelativeTrieNode parent = *Result->Parent;
+            TrieNode parent = *Result->Parent;
             
             assert(parent != NULL);
             assert(parent->Node.Group != NULL);
             
-            if (e = EventTrie_CreateNode(NULL, Result->Parent), e == NULL) { return 0; }
+            if (e = EventTrieNode_Create(NULL, Result->Parent), e == NULL) { return 0; }
             
-            Trie_InitNode((TrieNode) e, Result->Node.Group, Result->Node.GroupCount, Result->Node.Prefix, Result->Node.PrefixLength, EventTrieDestructorDefault);
-            parent->Node.Group[Charmap[Prefix[PrefixIndex - Result->Node.PrefixLength]]] = (TrieNode) e;
+            TrieNodeBase_Init((TrieNodeBase) e, Result->Node.Group, Result->Node.GroupCount, Result->Node.Prefix, Result->Node.PrefixLength, EventTrieNodeDestructor);
+            parent->Node.Group[Charmap[Prefix[PrefixIndex - Result->Node.PrefixLength]]] = (TrieNodeBase) e;
             free(Result);
         }
     } else {
         /* situation ii & iii. The node doesn't exist...
          * a. the path to the node already partially exists, but a branch might need to be split to add the node. this is situation ii, and we'll deal with it first. */
         unsigned char *p, *q; /* = Prefix + index; <--- This value wasn't used -- Andrew Hodges (07/07/2010) */
-        RelativeTrieNode *parent = Result->Parent, t;
-        TrieNode n;
+        TrieNode *parent = Result->Parent, t;
+        TrieNodeBase n;
         
+		/* NOTE: the second condition is here because Root has PrefixLength of 0! LEAVE IT! */
         if (NodeIndex > 0 && NodeIndex < Result->Node.PrefixLength) {
-            TrieNode *g;
+            TrieNodeBase *g;
 
             /* situation ii.
              * The node doesn't exist, and it's path lies between 2 nodes that share a branch for example... in the middle of a branch
@@ -83,7 +84,7 @@ unsigned int EventTrie_AddNode(TrieNode Parent, unsigned char *Prefix, unsigned 
             
             memcpy(p, Result->Node.Prefix, NodeIndex), p[NodeIndex] = '\0';
             
-            if (g = Trie_CreateGroup(), g == NULL) {
+            if (g = TrieNodeBase_CreateGroup(), g == NULL) {
                 free(p);
                 return 0;
             }
@@ -92,16 +93,16 @@ unsigned int EventTrie_AddNode(TrieNode Parent, unsigned char *Prefix, unsigned 
              *    eg. the collection contains "foobar" and we're adding "foobah". The code below will add a "fooba" item to the root node,
              *    so we need to add a "h" item to the "fooba" item's nodes. */
             if (Charmap[Prefix[PrefixIndex]] != '\0') {
-                t = RelativeTrie_CreateNode(parent);
-                n = Trie_InitNode((TrieNode) t, g, 1, p, NodeIndex, RelativeTrieDestructorDefault);
+                t = TrieNode_Create(parent);
+                n = TrieNodeBase_Init((TrieNodeBase) t, g, 1, p, NodeIndex, TrieNodeBaseDestructor);
             }
             
             /* The following branch executes when adding a node with a prefix that already exists as part of another node's prefix.
              *    eg. the collection contains "foobar" and we're adding "foo". */
             else {
-                e = EventTrie_CreateNode(NULL, parent);
-                t = (RelativeTrieNode) e;
-                n = Trie_InitNode((TrieNode) e, g, 1, p, NodeIndex, EventTrieDestructorDefault);
+                e = EventTrieNode_Create(NULL, parent);
+                t = (TrieNode) e;
+                n = TrieNodeBase_Init((TrieNodeBase) e, g, 1, p, NodeIndex, EventTrieNodeDestructor);
             }
 
             /* n will be allocated in one of the above branches, so it'll also need to be checked :) */
@@ -118,10 +119,10 @@ unsigned int EventTrie_AddNode(TrieNode Parent, unsigned char *Prefix, unsigned 
             (*parent)->Node.Group[*p] = n;
 
             /* Add "foobar" as a node within the new node and update it's Parent value to reflect the change */
-            (n->Group = g)[Result->Node.Prefix[0]] = (TrieNode) Result;
+            (n->Group = g)[Result->Node.Prefix[0]] = (TrieNodeBase) Result;
             Result->Parent = t->This;
             NodeIndex = 0;
-            Result = (RelativeTrieNode) n;
+            Result = (TrieNode) n;
         }
         
         /* The following branch executes when:
@@ -149,15 +150,15 @@ unsigned int EventTrie_AddNode(TrieNode Parent, unsigned char *Prefix, unsigned 
             for (o = p, q = Prefix + PrefixIndex; *o = Charmap[*q]; o++, q++);
             
             /* Create the node that will store the event handler */
-            if (e = EventTrie_CreateNode(NULL, Result->Parent), e == NULL) {
+            if (e = EventTrieNode_Create(NULL, Result->Parent), e == NULL) {
                 free(p);
                 return 0;
             }
 
             /* Initialize the node that will store the event handler */
-            Trie_InitNode((TrieNode) e, Trie_CreateGroup(), 0, p, len, EventTrieDestructorDefault);
+            TrieNodeBase_Init((TrieNodeBase) e, TrieNodeBase_CreateGroup(), 0, p, len, EventTrieNodeDestructor);
 
-            Result->Node.Group[*p] = (TrieNode) e;
+            Result->Node.Group[*p] = (TrieNodeBase) e;
             e->Node.Parent = Result->This;
             PrefixIndex += len;
         }
@@ -170,6 +171,6 @@ unsigned int EventTrie_AddNode(TrieNode Parent, unsigned char *Prefix, unsigned 
     return PrefixIndex;
 }
 
-void EventTrie_DestroyNode(EventTrieNode Node) {
+void EventTrieNode_Destroy(void *Node) {
 
 }
