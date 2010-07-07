@@ -61,12 +61,11 @@ unsigned int EventTrie_AddNode(TrieNode Parent, unsigned char *Prefix, unsigned 
             Trie_InitNode((TrieNode) e, Result->Node.Group, Result->Node.GroupCount, Result->Node.Prefix, Result->Node.PrefixLength, EventTrieDestructorDefault);
             parent->Node.Group[Charmap[Prefix[PrefixIndex - Result->Node.PrefixLength]]] = (TrieNode) e;
             free(Result);
-        } /* FIXME: e is not set! -- Andrew Hodges (07/07/2010) */
+        }
     } else {
         /* situation ii & iii. The node doesn't exist...
          * a. the path to the node already partially exists, but a branch might need to be split to add the node. this is situation ii, and we'll deal with it first. */
-        //unsigned int index = PrefixIndex - NodeIndex;
-        unsigned char *p, *q /* = Prefix + index; <--- This value wasn't used -- Andrew Hodges (07/07/2010) */;
+        unsigned char *p, *q; /* = Prefix + index; <--- This value wasn't used -- Andrew Hodges (07/07/2010) */
         RelativeTrieNode *parent = Result->Parent, t;
         TrieNode n;
         

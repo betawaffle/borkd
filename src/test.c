@@ -5,10 +5,7 @@
 #include <string.h>
 #include <assert.h>
 
-//#include "EventListNode.h"
 #include "EventTrieNode.h"
-
-#define MAX_DEPTH 1024
 
 void IterateNodes(TrieNode root, void (*pre)(TrieNode, int), void (*post)(TrieNode, int), int depth) {
     if (pre != NULL) {
@@ -20,7 +17,7 @@ void IterateNodes(TrieNode root, void (*pre)(TrieNode, int), void (*post)(TrieNo
         if (root->Group[x] != NULL) {
             RelativeTrieNode n = (void *) root->Group[x];
             
-            if (*n->Parent != (RelativeTrieNode) root) { printf("SHIT! PARENT MISMATCH!\n"); }
+            assert(*n->Parent == (RelativeTrieNode) root);
             
             IterateNodes(root->Group[x], pre, post, depth + 1);
         }
@@ -31,14 +28,11 @@ void IterateNodes(TrieNode root, void (*pre)(TrieNode, int), void (*post)(TrieNo
     }
 }
 
-void PrintNode(TrieNode node, int depth) {
-    assert(depth < MAX_DEPTH);
-    
-    char buf[MAX_DEPTH]; /* Quite a lot of spaces... -- Andrew Hodges (07/06/2010) */
+void PrintNode(TrieNode node, int depth) { assert(depth < 1024);
     int  x;
-    for (x = 0; x < depth; x++) buf[x] = ' '; buf[x] = '\0';
+    for (x = 0; x < depth; x++) putchar(' ');
     
-    printf("%sPrefix: %s\n", buf, node->Prefix);
+    printf("Prefix: %s\n", node->Prefix);
 }
 
 void FreeNode(TrieNode node, int depth) {

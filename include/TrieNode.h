@@ -10,7 +10,7 @@
 
 /**
  * 
- */     //struct TrieNode;
+ */     struct TrieNode;
 typedef struct TrieNode *TrieNode;
 
 /**

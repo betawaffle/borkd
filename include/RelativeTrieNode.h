@@ -16,7 +16,7 @@
  * @brief Parent The parent node (or NULL).
  * @brief This An allocated object that contains a pointer to Node. Used when reorganising the Trie (eg. when an insertion is made).
  * @extends TrieNode
- */     //struct RelativeTrieNode;
+ */     struct RelativeTrieNode;
 typedef struct RelativeTrieNode *RelativeTrieNode;
 
 /**
