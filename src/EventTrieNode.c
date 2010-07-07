@@ -26,7 +26,7 @@ unsigned int EventTrie_AddNode(TrieNode Parent, unsigned char *Prefix, unsigned 
     RelativeTrieNode Result = NULL;
     unsigned int PrefixIndex = 0, NodeIndex = 0;
     unsigned int success = Trie_FindNearest(Parent, Prefix, Charmap, (TrieNode *) &Result, &PrefixIndex, &NodeIndex);
-    EventTrieNode e; 
+    EventTrieNode e = (EventTrieNode) Result; 
     
     /* The aim of the following group of logic is to create a value node to store our value (the pointer to function, "function").
      * There are 3 possible situations:
