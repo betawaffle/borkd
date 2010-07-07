@@ -5,28 +5,22 @@
 #include <string.h>
 #include <assert.h>
 
-#define SOCKET int
-
-struct SockListNode {
-    int fd; /* TODO: SOCKET fd; Maybe? -- Andrew Hodges (07/06/2010) */
-};
-
-#include "EventListNode.c"
-#include "EventTrieNode.c"
+//#include "EventListNode.h"
+#include "EventTrieNode.h"
 
 #define MAX_DEPTH 1024
 
-void IterateNodes(struct TrieNode *root, void (*pre)(struct TrieNode *, int), void (*post)(struct TrieNode *, int), int depth) {
-    int x;
+void IterateNodes(TrieNode root, void (*pre)(TrieNode, int), void (*post)(TrieNode, int), int depth) {
     if (pre != NULL) {
         pre(root, depth);
     }
     
+    int  x;
     for (x = 0; x < 256; x++) {
         if (root->Group[x] != NULL) {
-            struct RelativeTrieNode *n = (void *) root->Group[x];
+            RelativeTrieNode n = (void *) root->Group[x];
             
-            if (*n->Parent != (struct RelativeTrieNode *) root) { printf("SHIT! PARENT MISMATCH!\n"); }
+            if (*n->Parent != (RelativeTrieNode) root) { printf("SHIT! PARENT MISMATCH!\n"); }
             
             IterateNodes(root->Group[x], pre, post, depth + 1);
         }
@@ -37,25 +31,23 @@ void IterateNodes(struct TrieNode *root, void (*pre)(struct TrieNode *, int), vo
     }
 }
 
-void PrintNode(struct TrieNode *node, int depth) {
+void PrintNode(TrieNode node, int depth) {
     assert(depth < MAX_DEPTH);
     
     char buf[MAX_DEPTH]; /* Quite a lot of spaces... -- Andrew Hodges (07/06/2010) */
     int  x;
-    for (x = 0; x < depth; x++) buf[x] = ' ';
-    
-    buf[x] = '\0';
+    for (x = 0; x < depth; x++) buf[x] = ' '; buf[x] = '\0';
     
     printf("%sPrefix: %s\n", buf, node->Prefix);
 }
 
-void FreeNode(struct TrieNode *node, int level) {
+void FreeNode(TrieNode node, int depth) {
     /* FIXME: Memory leak here! */
     
     free(node);
 }
 
-unsigned char Charmap[] = {
+unsigned char DefaultCharmap[] = {
     '\x00', '\x01', '\x02', '\x03', '\x04', '\x05', '\x06', '\x07', '\x08', '\x09', '\x0A', '\x0B', '\x0C', '\x0D', '\x0E', '\x0F',
     '\x10', '\x11', '\x12', '\x13', '\x14', '\x15', '\x16', '\x17', '\x18', '\x19', '\x1A', '\x1B', '\x1C', '\x1D', '\x1E', '\x1F',
     '\x20', '\x21', '\x22', '\x23', '\x24', '\x25', '\x26', '\x27', '\x28', '\x29', '\x2A', '\x2B', '\x2C', '\x2D', '\x2E', '\x2F',
@@ -74,31 +66,31 @@ unsigned char Charmap[] = {
     '\xF0', '\xF1', '\xF2', '\xF3', '\xF4', '\xF5', '\xF6', '\xF7', '\xF8', '\xF9', '\xFA', '\xFB', '\xFC', '\xFD', '\xFE', '\xFF'
 };
 
-void foo(struct SockListNode *Node, unsigned char *Parsed, unsigned char *Unparsed, unsigned char *End) {
+void foo(SockListNode Node, unsigned char *Parsed, unsigned char *Unparsed, unsigned char *End) {
     printf("foo called\n");
 }
 
-void bar(struct SockListNode *Node, unsigned char *Parsed, unsigned char *Unparsed, unsigned char *End) {
+void bar(SockListNode Node, unsigned char *Parsed, unsigned char *Unparsed, unsigned char *End) {
     printf("bar called\n");
 }
 
-void foobar(struct SockListNode *Node, unsigned char *Parsed, unsigned char *Unparsed, unsigned char *End) {
+void foobar(SockListNode Node, unsigned char *Parsed, unsigned char *Unparsed, unsigned char *End) {
     printf("foobar called\n");
 }
 
-void foobard(struct SockListNode *Node, unsigned char *Parsed, unsigned char *Unparsed, unsigned char *End) {
+void foobard(SockListNode Node, unsigned char *Parsed, unsigned char *Unparsed, unsigned char *End) {
     printf("foobar'd called\n");
 }
 
-int main(const int argc, const char **argv) {
-    struct EventTrieNode *TrieRoot;
+int main(const int argc, const char *argv[]) {
+    EventTrieNode TrieRoot;
     char *str;
     
 #define TEST_START(i, name) printf("*** Test %d *** : %s\n\n", i, name);\
-    TrieRoot = (struct EventTrieNode *) Trie_InitNode((struct TrieNode *) RelativeTrie_CreateNode(NULL), Trie_CreateGroup(), 0, NULL, 0, (Destroy) &RelativeTrie_DestroyNode)
-#define TEST(s) str = s; printf("Trie_AddNode(\"%s\"): %u\n", str, EventTrie_AddNode((struct TrieNode *) TrieRoot, (unsigned char *) str, Charmap, (void *) str))
+    TrieRoot = (EventTrieNode) Trie_InitNode((TrieNode) RelativeTrie_CreateNode(NULL), Trie_CreateGroup(), 0, NULL, 0, RelativeTrieDestructorDefault)
+#define TEST(s) str = s; printf("Trie_AddNode(\"%s\"): %u\n", str, EventTrie_AddNode((TrieNode) TrieRoot, (unsigned char *) str, DefaultCharmap, (void *) str))
 #define TEST_END() IterateNodes((struct TrieNode *) TrieRoot, PrintNode, NULL, 0);\
-    IterateNodes((struct TrieNode *) TrieRoot, NULL, FreeNode, 0);\
+    IterateNodes((TrieNode) TrieRoot, NULL, FreeNode, 0);\
     printf("-----\n\n")
     
     TEST_START(1, "Append");
@@ -175,17 +167,17 @@ int main(const int argc, const char **argv) {
 #undef TEST_START()
     
 #if 0 /* How To Use. -- Andrew Hodges (07/06/2010) */
-    struct EventTrieNode *item;
+    EventTrieNode item;
     unsigned int inputindex = 0, nodeindex = 0;
     
-    EventTrie_AddNode(TrieRoot, "BAR", Charmap, bar);
-    EventTrie_AddNode(TrieRoot, "FUBAR", Charmap, fubar);
-    EventTrie_AddNode(TrieRoot, "FOO", Charmap, foo);
-    EventTrie_AddNode(TrieRoot, "FOOBAR", Charmap, foobar);
+    EventTrie_AddNode(TrieRoot, "BAR", DefaultCharmap, bar);
+    EventTrie_AddNode(TrieRoot, "FUBAR", DefaultCharmap, fubar);
+    EventTrie_AddNode(TrieRoot, "FOO", DefaultCharmap, foo);
+    EventTrie_AddNode(TrieRoot, "FOOBAR", DefaultCharmap, foobar);
 
-    /* Fetching this item, yeh? -------------------------------------------.
-     *                                                                     vvvvvv */
-    int success; success = Trie_FindNearest((struct TrieNode *) TrieRoot, "FOOBAR", Charmap, &item, &inputindex, &nodeindex);
+    /* Fetching this item, yeh? ----------------------------------.
+     *                                                            vvvvvv */
+    int success; success = Trie_FindNearest((TrieNode) TrieRoot, "FOOBAR", DefaultCharmap, &item, &inputindex, &nodeindex);
     if (success == 0) {
         printf("item was not found\n");
     } else if (item->Node.Node.Destroy != EventTrie_DestroyNode) {
