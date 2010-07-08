@@ -17,11 +17,7 @@ EventListNode EventListNode_Create(EventListNode Next, EventHandler Handler) {
 }
 
 void EventListNode_Raise(EventListNode Node, EventBase Event) {
-    switch (NULL) {
-        case Node:
-        case Node->Handler:
-        return;
-    }
+	if (Node == NULL || Node->Handler == NULL) { return; }
     
     Node->Handler(Event);
     EventListNode_Raise(Node->Next, Event);

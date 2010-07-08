@@ -22,7 +22,7 @@ typedef struct EventListNode *EventListNode;
     Destructor      Destroy; 
     EventListNode   Next;
     EventHandler    Handler;
-}
+};
 
 /**
  * 

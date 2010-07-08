@@ -22,7 +22,7 @@ EventTrieNode EventTrieNode_Create(EventListNode EventList, TrieNode *Parent) {
     return EventTrieNode_Init(malloc(sizeof(struct EventTrieNode)), EventList, Parent, This);
 }
 
-unsigned int EventTrie_AddNode(TrieNode Parent, unsigned char *Prefix, unsigned char *Charmap, Event Function) {
+unsigned int EventTrie_AddNode(TrieNode Parent, unsigned char *Prefix, unsigned char *Charmap, EventHandler Handler) {
 	EventTrieNode e;
 	TrieNode Result = NULL;
     unsigned int PrefixIndex = 0, NodeIndex = 0;
@@ -37,8 +37,12 @@ unsigned int EventTrie_AddNode(TrieNode Parent, unsigned char *Prefix, unsigned 
 	}
 
 	/* The Trie_AddNode call below is slightly inefficient, in that it'll have to iterate part of the Prefix string a second time */
-	e->EventList = EventList_CreateNode(e->EventList, Function); 
-	return Trie_AddNode(Result, Prefix + PrefixIndex, Charmap, (TrieNode) e);
+	e->Node.Node.Destroy = EventTrieNodeDestructor;
+	e->EventList = EventListNode_Create(e->EventList, Handler);
+	if (PrefixIndex - NodeIndex == 0 && Result->Parent != NULL) {
+		return Trie_AddNode(Result->Parent, Prefix + (PrefixIndex - NodeIndex), Charmap, (TrieNode) e);
+	}
+	return Trie_AddNode(Result, Prefix + (PrefixIndex - NodeIndex), Charmap, (TrieNode) e);
 }
 
 /* Old EventTrie_AddNode code. The new one uses the generic Trie_AddNode which abstracts most of the common logic for adding to the Trie. */

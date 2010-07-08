@@ -46,7 +46,7 @@ EventTrieNode EventTrieNode_Create(EventListNode EventList, TrieNode *Parent);
  */
 
 /* TODO: Not sure if Parent should actually be a TrieNodeBase here. I must refactor the rest before changing it. - Seb */
-unsigned int EventTrie_AddNode(TrieNode Parent, unsigned char *Prefix, unsigned char *Charmap, Event Function);
+unsigned int EventTrie_AddNode(TrieNode Parent, unsigned char *Prefix, unsigned char *Charmap, EventHandler Handler);
 
 /**
  * 

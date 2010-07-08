@@ -17,11 +17,7 @@ SockEventListNode SockEventListNode_Create(SockEventListNode Next, EventHandler 
 }
 
 void SockEventListNode_Raise(SockEventListNode Node, SockEvent Event) {
-    switch (NULL) {
-        case Node:
-        case Node->Handler:
-        return;
-    }
+	if (Node == NULL || Node->Handler == NULL) { return; }
     
     Node->Handler(Event);
     SockEventListNode_Raise(Node->Next, Event);

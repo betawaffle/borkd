@@ -11,7 +11,7 @@
 typedef struct ListNode *ListNode;
         struct ListNode {
     Destructor Destroy; 
-    EventListNode Next;
+    ListNode Next;
 };
 
 #endif

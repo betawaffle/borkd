@@ -7,7 +7,7 @@
  * 
  */     struct EventBase;
 typedef struct EventBase *EventBase;
-        struct EventBase {}; /* This looks crazy, but I think it will work. -- Andrew Hodges (07/07/2010) */
+        struct EventBase {int foo; }; /* This looks crazy, but I think it will work. -- Andrew Hodges (07/07/2010) */
 
 /**
  * 
