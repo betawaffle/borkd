@@ -3,6 +3,8 @@
 #ifndef INCLUDED_SockEvent_H
 #define INCLUDED_SockEvent_H
 
+#include "SockListNode.h" /* This is here (while we're still using SockListNode) -- Andrew Hodges (07/08/2010) */
+
 /**
  * 
  */     struct SockEvent;
