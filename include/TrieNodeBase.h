@@ -13,22 +13,23 @@
 /**
  * 
  */     struct TrieNodeBase;
-typedef struct TrieNodeBase *TrieNodeBase;
+typedef struct TrieNodeBase  *TrieNodeBase;
+typedef struct TrieNodeBase **TrieNodeBaseGroup;
 
 /**
  * 
  */
-TrieNodeBase *TrieNodeBase_CreateGroup();
+TrieNodeBaseGroup TrieNodeBaseGroup_Create();
 
 /**
  * 
  */
-TrieNodeBase TrieNodeBase_Init(TrieNodeBase Node, TrieNodeBase *Group, unsigned int GroupCount, unsigned char *Prefix, unsigned int PrefixLength, Destructor Destroy);
+TrieNodeBase TrieNodeBase_Init(TrieNodeBase Node, TrieNodeBaseGroup Group, unsigned int GroupCount, unsigned char *Prefix, unsigned int PrefixLength, Destructor Destroy);
 
 /**
  * 
  */
-TrieNodeBase TrieNodeBase_Create(TrieNodeBase *Group, unsigned int GroupCount, unsigned char *Prefix, unsigned int PrefixLength, Destructor Destroy);
+TrieNodeBase TrieNodeBase_Create(TrieNodeBaseGroup Group, unsigned int GroupCount, unsigned char *Prefix, unsigned int PrefixLength, Destructor Destroy);
 
 /**
  * Finds the node identified by the Charmap translation of Prefix, and stores it in Result. If the node can't be found, stores the closest potential parent node in Result instead.
@@ -53,7 +54,7 @@ void TrieNodeBase_Destroy(void *Node);
 struct TrieNodeBase {
     Destructor Destroy;
     
-    TrieNodeBase *Group;
+    TrieNodeBaseGroup Group;
     unsigned int GroupCount;
     
     unsigned char *Prefix;

@@ -36,12 +36,14 @@ TrieNode TrieNode_Init(TrieNode Node, TrieNode *Parent, TrieNode *This);
  */
 TrieNode TrieNode_Create(TrieNode *Parent);
 
+unsigned int Trie_AddNode(TrieNode Parent, unsigned char *Prefix, unsigned char *Charmap, TrieNode Node);
+
 /**
  * 
  */
 void TrieNode_Destroy(void *Node);
 
-#define TrieNodeDestructorDefault ((Destructor) &Trie_DestroyNode)
+#define TrieNodeDestructor ((Destructor) &TrieNode_Destroy)
 
 /* TODO: Move This -- Andrew Hodges (07/07/2010) */
 struct TrieNode {

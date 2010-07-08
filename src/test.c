@@ -17,6 +17,7 @@ void IterateNodes(TrieNodeBase root, void (*pre)(TrieNodeBase, int), void (*post
         if (root->Group[x] != NULL) {
             TrieNode n = (void *) root->Group[x];
             
+			assert(*n->This == n);
             assert(*n->Parent == (TrieNode) root);
             assert(depth < 1024);
 
@@ -39,7 +40,7 @@ void PrintNode(TrieNodeBase node, int depth) {
 void FreeNode(TrieNodeBase node, int depth) {
     /* FIXME: Memory leak here! */
     
-    node->Destroy(node);
+    free(node);
 }
 
 unsigned char DefaultCharmap[] = {
@@ -84,7 +85,7 @@ int main(const int argc, const char *argv[]) {
     char *str;
     
 #define TEST_START(i, name) printf("*** Test %d *** : %s\n\n", i, name);\
-    TrieRoot = (TrieNode) TrieNodeBase_Init((TrieNodeBase) TrieNode_Create(NULL), TrieNodeBase_CreateGroup(), 0, NULL, 0, TrieNodeBaseDestructor)
+    TrieRoot = (TrieNode) TrieNodeBase_Init((TrieNodeBase) TrieNode_Create(NULL), TrieNodeBaseGroup_Create(), 0, NULL, 0, TrieNodeBaseDestructor)
 #define TEST(s) str = s; printf("Trie_AddNode(\"%s\"): %u\n", str, EventTrie_AddNode((TrieNode) TrieRoot, (unsigned char *) str, DefaultCharmap, (void *) str))
 #define TEST_END() IterateNodes((TrieNodeBase) TrieRoot, PrintNode, NULL, 0);\
     IterateNodes((TrieNodeBase) TrieRoot, NULL, FreeNode, 0);\

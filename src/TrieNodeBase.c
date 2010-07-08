@@ -5,15 +5,15 @@
 
 #include "TrieNodeBase.h"
 
-TrieNodeBase *TrieNodeBase_CreateGroup() {
-    TrieNodeBase *g; g = malloc(256 * sizeof(*g));
+TrieNodeBaseGroup TrieNodeBaseGroup_Create() {
+    TrieNodeBaseGroup g; g = malloc(256 * sizeof(*g));
     
     if (g == NULL) { return NULL; }
  
     return memset(g, 0, 256 * sizeof(*g));
 }
 
-TrieNodeBase TrieNodeBase_Init(TrieNodeBase Node, TrieNodeBase *Group, unsigned int GroupCount, unsigned char *Prefix, unsigned int PrefixLength, Destructor Destroy) {
+TrieNodeBase TrieNodeBase_Init(TrieNodeBase Node, TrieNodeBaseGroup Group, unsigned int GroupCount, unsigned char *Prefix, unsigned int PrefixLength, Destructor Destroy) {
     if (Node == NULL) { return NULL; }
     
     Node->Group = Group;
@@ -25,7 +25,7 @@ TrieNodeBase TrieNodeBase_Init(TrieNodeBase Node, TrieNodeBase *Group, unsigned 
     return Node;
 }
  
-TrieNodeBase TrieNodeBase_Create(TrieNodeBase *Group, unsigned int GroupCount, unsigned char *Prefix, unsigned int PrefixLength, Destructor Destroy) {
+TrieNodeBase TrieNodeBase_Create(TrieNodeBaseGroup Group, unsigned int GroupCount, unsigned char *Prefix, unsigned int PrefixLength, Destructor Destroy) {
     return TrieNodeBase_Init(malloc(sizeof(struct TrieNodeBase)), Group, GroupCount, Prefix, PrefixLength, Destroy);
 }
 

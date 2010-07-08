@@ -23,6 +23,27 @@ EventTrieNode EventTrieNode_Create(EventListNode EventList, TrieNode *Parent) {
 }
 
 unsigned int EventTrie_AddNode(TrieNode Parent, unsigned char *Prefix, unsigned char *Charmap, Event Function) {
+	EventTrieNode e;
+	TrieNode Result = NULL;
+    unsigned int PrefixIndex = 0, NodeIndex = 0;
+	unsigned int success = Trie_FindNearest((TrieNodeBase) Parent, Prefix, Charmap, (TrieNodeBase *) &Result, &PrefixIndex, &NodeIndex);
+
+	/* The following will execute if the node could not be found, or if the node is not an EventTrieNode */
+	if (success == 0 || (success == 1 && Result->Node.Destroy != EventTrieNodeDestructor)) {
+		if (e = EventTrieNode_Create(NULL, NULL), e == NULL) { return 0; }
+	}
+	else {
+		e = (EventTrieNode) Result;
+	}
+
+	/* The Trie_AddNode call below is slightly inefficient, in that it'll have to iterate part of the Prefix string a second time */
+	e->EventList = EventList_CreateNode(e->EventList, Function); 
+	return Trie_AddNode(Result, Prefix + PrefixIndex, Charmap, (TrieNode) e);
+}
+
+/* Old EventTrie_AddNode code. The new one uses the generic Trie_AddNode which abstracts most of the common logic for adding to the Trie. */
+#if 0
+unsigned int EventTrie_AddNode(TrieNode Parent, unsigned char *Prefix, unsigned char *Charmap, Event Function) {
     TrieNode Result = NULL;
     unsigned int PrefixIndex = 0, NodeIndex = 0;
     unsigned int success = Trie_FindNearest((TrieNodeBase) Parent, Prefix, Charmap, (TrieNodeBase *) &Result, &PrefixIndex, &NodeIndex);
@@ -170,6 +191,7 @@ unsigned int EventTrie_AddNode(TrieNode Parent, unsigned char *Prefix, unsigned 
                                                                   *        See line 64ish. -- Andrew Hodges (07/07/2010) */
     return PrefixIndex;
 }
+#endif
 
 void EventTrieNode_Destroy(void *Node) {
 
