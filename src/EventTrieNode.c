@@ -39,7 +39,7 @@ unsigned int EventTrie_AddNode(TrieNode Parent, unsigned char *Prefix, unsigned 
 	/* The Trie_AddNode call below is slightly inefficient, in that it'll have to iterate part of the Prefix string a second time */
 	e->Node.Node.Destroy = EventTrieNodeDestructor;
 	e->EventList = EventListNode_Create(e->EventList, Handler);
-	if (PrefixIndex - NodeIndex == 0 && Result->Parent != NULL) {
+	if (NodeIndex > 0 && Result->Parent != NULL) {
 		return Trie_AddNode(*Result->Parent, Prefix + (PrefixIndex - NodeIndex), Charmap, (TrieNode) e);
 	}
 	return Trie_AddNode(Result, Prefix + (PrefixIndex - NodeIndex), Charmap, (TrieNode) e);
