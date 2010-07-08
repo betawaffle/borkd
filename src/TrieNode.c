@@ -169,6 +169,6 @@ unsigned int Trie_AddNode(TrieNode Parent, unsigned char *Prefix, unsigned char 
 }
 
 
-void TrieNode_Destroy(TrieNode Node) {
+void TrieNode_Destroy(void *Node) {
     
 }

@@ -19,6 +19,10 @@
  * @extends TrieNode
  */     struct EventTrieNode;
 typedef struct EventTrieNode *EventTrieNode;
+        struct EventTrieNode {
+    struct TrieNode Node; /* This is still a struct because it's not a pointer. DO NOT CHANGE! -- Andrew Hodges (07/07/2010) */
+    EventListNode EventList;
+};
 
 /**
  * 
@@ -38,10 +42,7 @@ EventTrieNode EventTrieNode_Init(EventTrieNode Node, EventListNode EventList, Tr
  * @param EventList The EventListNode to initialize the node to.
  * @return NULL indicates an error. The return value shall be a pointer to the new IRCSockListNode.
  */
-Inline
-EventTrieNode EventTrieNode_Create(EventListNode EventList, TrieNode *Parent) {
-    return Create(EventTrieNode, 0, EventList, Parent);
-}
+EventTrieNode EventTrieNode_Create(EventListNode EventList, TrieNode *Parent);
 
 /**
  * Adds an Event handler \a Function record to an EventTrieNode collection. This function uses functionality from \ref Trie_FindNearest...
@@ -62,11 +63,5 @@ unsigned int EventTrie_AddNode(TrieNode Parent, unsigned char *Prefix, unsigned 
 void EventTrieNode_Destroy(void *Node);
 
 #define EventTrieNodeDestructor ((Destructor) &EventTrieNode_Destroy)
-
-/* TODO: Move This -- Andrew Hodges (07/07/2010) */
-struct EventTrieNode {
-    struct TrieNode Node; /* This is still a struct because it's not a pointer. DO NOT CHANGE! -- Andrew Hodges (07/07/2010) */
-    EventListNode EventList;
-};
 
 #endif

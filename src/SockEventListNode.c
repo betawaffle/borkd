@@ -19,6 +19,6 @@ SockEventListNode SockEventListNode_Create(SockEventListNode Next, EventHandler 
 void SockEventListNode_Raise(SockEventListNode Node, SockEvent Event) {
 	if (Node == NULL || Node->Handler == NULL) { return; }
     
-    Node->Handler(Event);
+    Node->Handler((EventBase) Event);
     SockEventListNode_Raise(Node->Next, Event);
 }
