@@ -5,4 +5,7 @@
 
 typedef void (*Destructor)(void *);
 
+#define Inline __inline__ __attribute__(( always_inline ))
+#define Create(type, extra_sz, ...) type##_Init(##type##_Alloc(extra_sz), ##__VA_ARGS__)
+
 #endif

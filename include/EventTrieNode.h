@@ -21,6 +21,11 @@
 typedef struct EventTrieNode *EventTrieNode;
 
 /**
+ * 
+ */
+void *EventTrieNode_Alloc(size_t Extra);
+
+/**
  * Initializes an EventTrieNode.
  * @param Node The node to be initialized.
  * @param EventList The EventListNode to initialize \a Node to.
@@ -33,7 +38,10 @@ EventTrieNode EventTrieNode_Init(EventTrieNode Node, EventListNode EventList, Tr
  * @param EventList The EventListNode to initialize the node to.
  * @return NULL indicates an error. The return value shall be a pointer to the new IRCSockListNode.
  */
-EventTrieNode EventTrieNode_Create(EventListNode EventList, TrieNode *Parent);
+Inline
+EventTrieNode EventTrieNode_Create(EventListNode EventList, TrieNode *Parent) {
+    return Create(EventTrieNode, 0, EventList, Parent);
+}
 
 /**
  * Adds an Event handler \a Function record to an EventTrieNode collection. This function uses functionality from \ref Trie_FindNearest...
