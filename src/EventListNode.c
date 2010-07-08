@@ -4,26 +4,25 @@
 
 #include "EventListNode.h"
 
-struct EventListNode {
-    EventListNode Next;
-    Event Function;
-};
-
-EventListNode EventList_CreateNode(EventListNode Next, Event Function) {
+EventListNode EventListNode_Create(EventListNode Next, EventHandler Handler) {
     EventListNode Node; Node = malloc(sizeof(*Node));
     
     if (Node == NULL) { return NULL; }
     
+    Node->Destroy = &free;
     Node->Next = Next;
-    Node->Function = Function;
+    Node->Handler = Handler;
     
     return Node;
 }
 
-void EventListNode_Raise(SockListNode SockNode, EventListNode EventNode, unsigned char *Parsed, unsigned char *Unparsed, unsigned char *End) {
-    if (EventNode == NULL) { return; }
-    if (EventNode->Function == NULL) { return; }
+void EventListNode_Raise(EventListNode Node, EventBase Event) {
+    switch (NULL) {
+        case Node:
+        case Node->Handler:
+        return;
+    }
     
-    EventNode->Function(SockNode, Parsed, Unparsed, End);
-    EventListNode_Raise(SockNode, EventNode->Next, Parsed, Unparsed, End);
+    Node->Handler(Event);
+    EventListNode_Raise(Node->Next, Event);
 }
