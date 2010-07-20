@@ -7,7 +7,7 @@
 
 #include "EventTrieNode.h"
 
-void IterateNodes(TrieNodeBase root, void (*pre)(TrieNodeBase, int), void (*post)(TrieNodeBase, int), int depth) {
+void IterateNodes(struct TrieNodeBase *root, void (*pre)(struct TrieNodeBase *, int), void (*post)(struct TrieNodeBase *, int), int depth) {
     int  x; /* please leave variables at the top of their blocks, because some people use stupid-C89 compilers :P - Seb */
     if (pre != NULL) {
         pre(root, depth);
@@ -15,13 +15,13 @@ void IterateNodes(TrieNodeBase root, void (*pre)(TrieNodeBase, int), void (*post
     
     for (x = 0; x < 256; x++) {
         if (root->Group[x] != NULL) {
-            TrieNode n = (void *) root->Group[x];
+            struct TrieNode *n = (void *) root->Group[x];
             
 			assert(*n->This == n);
-            assert(*n->Parent == (TrieNode) root);
+            assert(*n->Parent == (struct TrieNode *) root);
             assert(depth < 1024);
 
-            IterateNodes((TrieNodeBase) n, pre, post, depth + 1);
+            IterateNodes((struct TrieNodeBase *) n, pre, post, depth + 1);
         }
     }
     
@@ -30,14 +30,14 @@ void IterateNodes(TrieNodeBase root, void (*pre)(TrieNodeBase, int), void (*post
     }
 }
 
-void PrintNode(TrieNodeBase node, int depth) {
+void PrintNode(struct TrieNodeBase *node, int depth) {
     int  x;
     for (x = 0; x < depth; x++) putchar(' ');
     
     printf("Prefix: %s\n", node->Prefix);
 }
 
-void FreeNode(TrieNodeBase node, int depth) {
+void FreeNode(struct TrieNodeBase *node, int depth) {
     /* FIXME: Memory leak here! */
     
     free(node);
@@ -81,14 +81,14 @@ void foobard(SockListNode Node, unsigned char *Parsed, unsigned char *Unparsed, 
 */
 
 int main(const int argc, const char *argv[]) {
-    TrieNode TrieRoot;
+    struct TrieNode *TrieRoot;
     char *str;
     
 #define TEST_START(i, name) printf("*** Test %d *** : %s\n\n", i, name);\
-    TrieRoot = (TrieNode) TrieNodeBase_Init((TrieNodeBase) TrieNode_Create(NULL), TrieNodeBaseGroup_Create(), 0, NULL, 0, TrieNodeBaseDestructor)
-#define TEST(s) str = s; printf("Trie_AddNode(\"%s\"): %u\n", str, EventTrie_AddNode((TrieNode) TrieRoot, (unsigned char *) str, DefaultCharmap, (void *) str))
-#define TEST_END() IterateNodes((TrieNodeBase) TrieRoot, PrintNode, NULL, 0);\
-    IterateNodes((TrieNodeBase) TrieRoot, NULL, FreeNode, 0);\
+    TrieRoot = (struct TrieNode *) TrieNodeBase_Init((struct TrieNodeBase *) TrieNode_Create(NULL), TrieNodeBaseGroup_Create(), 0, NULL, 0, TrieNodeBaseDestructor)
+#define TEST(s) str = s; printf("Trie_AddNode(\"%s\"): %u\n", str, EventTrie_AddNode((struct TrieNode *) TrieRoot, (unsigned char *) str, DefaultCharmap, (void *) str))
+#define TEST_END() IterateNodes((struct TrieNodeBase *) TrieRoot, PrintNode, NULL, 0);\
+    IterateNodes((struct TrieNodeBase *) TrieRoot, NULL, FreeNode, 0);\
     printf("-----\n\n")
     
     TEST_START(1, "Append");
@@ -160,10 +160,12 @@ int main(const int argc, const char *argv[]) {
     TEST("foob4r");
     TEST_END();
     
+#if 0
 #undef TEST_END()
 #undef TEST()
 #undef TEST_START()
-    
+#endif
+
 #if 0 /* How To Use. -- Andrew Hodges (07/06/2010) */
     EventTrieNode item;
     unsigned int inputindex = 0, nodeindex = 0;

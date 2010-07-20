@@ -6,7 +6,7 @@
 /* TODO: This @brief is out of date. -- AH (07/08/2010) */
 /**
  * @file EventListNode.h
- * @brief Function prototype definition (Event), and linked list structure (EventListNode) for defining/storing Event handler functions.
+ * @brief Linked list structure (EventListNode) for defining/storing Event handler functions.
  *        Function for creating/initializing EventListNode instances.
  */
 
@@ -16,11 +16,9 @@
 /**
  * @struct EventListNode
  * @extends ListNode
- */     struct EventListNode;
-typedef struct EventListNode *EventListNode;
-        struct EventListNode {
-    Destructor      Destroy; 
-    EventListNode   Next;
+ */
+class EventListNode {
+    EventListNode   *Next;
     EventHandler    Handler;
 };
 

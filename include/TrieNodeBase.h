@@ -5,60 +5,34 @@
 
 /** 
  * @file TrieNodeBase.h
- * @brief Generic prefix TrieNodeBase structures and functions for initializing/creating/finding/destroying generic prefix TrieNodeBase instances.
+ * @brief Generic prefix TrieNodeBase class.
  */
 
-#include "Common.h"
+namespace TrieNode {
+	typedef int TrieNodeTypeID;
+	static const TrieNodeTypeID TrieNodeBaseID = 0;
 
-/**
- * 
- */     struct TrieNodeBase;
-typedef struct TrieNodeBase  *TrieNodeBase;
-typedef struct TrieNodeBase **TrieNodeBaseGroup;
+	class TrieNodeBase;
+	TrieNodeBase **TrieNodeBaseGroup_Create(int Capacity);
 
-/**
- * 
- */
-TrieNodeBaseGroup TrieNodeBaseGroup_Create();
+	class TrieNodeBase {
+	protected:
+	    
+	public:
+		TrieNodeTypeID Type;
 
-/**
- * 
- */
-TrieNodeBase TrieNodeBase_Init(TrieNodeBase Node, TrieNodeBaseGroup Group, unsigned int GroupCount, unsigned char *Prefix, unsigned int PrefixLength, Destructor Destroy);
+		TrieNodeBase **Group;
+		unsigned int GroupCount;
 
-/**
- * 
- */
-TrieNodeBase TrieNodeBase_Create(TrieNodeBaseGroup Group, unsigned int GroupCount, unsigned char *Prefix, unsigned int PrefixLength, Destructor Destroy);
+		unsigned char *Prefix;
+		unsigned int PrefixLength;
 
-/**
- * Finds the node identified by the Charmap translation of Prefix, and stores it in Result. If the node can't be found, stores the closest potential parent node in Result instead.
- * @param Root The root TrieNodeBase to search.
- * @param Prefix The path of the node to search for.
- * @param Charmap The translation table used to convert Prefix ie. from lowercase to uppercase.
- * @param Result A location that will store a pointer to the resulting node.
- * @param InputPrefixIndex A location that will store the number of bytes parsed from Prefix.
- * @param NodePrefixIndex A location that will store the number of bytes parsed from Result->Prefix.
- * @return 1 if the item was successfully located. 0 otherwise.
- */
-unsigned int Trie_FindNearest(TrieNodeBase Root, unsigned char *Prefix, unsigned char *Charmap, TrieNodeBase *Result, unsigned int *InputPrefixIndex, unsigned int *NodePrefixIndex);
-
-/**
- * 
- */
-void TrieNodeBase_Destroy(void *Node);
-
-#define TrieNodeBaseDestructor ((Destructor) &TrieNodeBase_Destroy)
-
-/* TODO: Move This -- Andrew Hodges (07/07/2010) */
-struct TrieNodeBase {
-    Destructor Destroy;
-    
-    TrieNodeBaseGroup Group;
-    unsigned int GroupCount;
-    
-    unsigned char *Prefix;
-    unsigned int PrefixLength;
+		TrieNodeBase(void);
+		TrieNodeBase(TrieNodeBase **Group, unsigned int GroupCount, unsigned char *Prefix, unsigned int PrefixLength);
+		void Init(TrieNodeBase **Group, unsigned int GroupCount, unsigned char *Prefix, unsigned int PrefixLength);
+		unsigned int FindNearest(unsigned char *Prefix, int *Charmap, TrieNodeBase **Result, unsigned int *InputPrefixIndex, unsigned int *NodePrefixIndex);
+		~TrieNodeBase();
+	};
 };
 
 #endif

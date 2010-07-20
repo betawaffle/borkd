@@ -5,21 +5,56 @@
 
 /**
  * @file TrieNode.h
- * @brief Extension of the TrieNodeBase structure for storing Relatives (Parents, siblings, etc).
- *        Functions for initializing/creating/destroying nodes from the collection.
+ * @brief Extension of the TrieNodeBase class for storing Relatives (Parents, siblings, etc).
  */
 
-#include "Common.h"
 #include "TrieNodeBase.h"
 
+namespace TrieNode {
+	static const TrieNodeTypeID TrieNodeID = 1;
+	static const TrieNodeTypeID ValueTrieNodeID = 2;
+
+	class TrieNode;
+	class TrieNode: public TrieNodeBase {
+	protected:
+
+	public:
+		TrieNode **Parent;
+		TrieNode **This;
+
+		TrieNode(void);
+		TrieNode(TrieNode **Parent);
+		TrieNode(TrieNode **Parent, TrieNode **This);
+		TrieNode(TrieNodeBase **Group, unsigned int GroupCount, unsigned char *Prefix, unsigned int PrefixLength);
+		TrieNode(TrieNode **Parent, TrieNodeBase **Group, unsigned int GroupCount, unsigned char *Prefix, unsigned int PrefixLength);
+		TrieNode(TrieNode **Parent, TrieNode **This, TrieNodeBase **Group, unsigned int GroupCount, unsigned char *Prefix, unsigned int PrefixLength);
+		void Init(TrieNode **Parent, TrieNode **This);
+		void Init(TrieNodeBase **Group, unsigned int GroupCount, unsigned char *Prefix, unsigned int PrefixLength);
+		void Init(TrieNode **Parent, TrieNodeBase **Group, unsigned int GroupCount, unsigned char *Prefix, unsigned int PrefixLength);
+		unsigned int AddNode(unsigned char *Prefix, int *Charmap, int GroupSize, TrieNode *Node);
+		unsigned int RenameNode(unsigned char *SourcePrefix, unsigned char *DestPrefix, int *Charmap, int GroupSize);
+		~TrieNode();
+	};
+
+	template<class foo> class ValueTrieNode: public TrieNode {
+	public:
+		foo Value;
+		ValueTrieNode(void);
+	};
+};
+
+/* TODO REWORD/RELOCATE THIS: */
 /**
  * @struct TrieNode
  * @brief Parent The parent node (or NULL).
  * @brief This An allocated object that contains a pointer to Node. Used when reorganising the Trie (eg. when an insertion is made).
  * @extends TrieNode
- */     struct TrieNode;
-typedef struct TrieNode *TrieNode;
-
+ */
+/**
+ * Creates a TrieNode. Passes return value of malloc onto \ref Trie_InitNode.
+ * @param Parent The TrieNode to initialize the node to.
+ * @return NULL indicates an error. The return value shall be a pointer to the new TrieNode.
+ */
 /**
  * Initializes an TrieNode.
  * @param Node The node to be initialized.
@@ -27,29 +62,5 @@ typedef struct TrieNode *TrieNode;
  * @param This An allocated object that contains a pointer to Node.
  * @returns NULL indicates error. The first argument (\a Node) indicates success.
  */
-TrieNode TrieNode_Init(TrieNode Node, TrieNode *Parent, TrieNode *This);
-
-/**
- * Creates a TrieNode. Passes return value of malloc onto \ref Trie_InitNode.
- * @param Parent The TrieNode to initialize the node to.
- * @return NULL indicates an error. The return value shall be a pointer to the new TrieNode.
- */
-TrieNode TrieNode_Create(TrieNode *Parent);
-
-unsigned int Trie_AddNode(TrieNode Parent, unsigned char *Prefix, unsigned char *Charmap, TrieNode Node);
-
-/**
- * 
- */
-void TrieNode_Destroy(void *Node);
-
-#define TrieNodeDestructor ((Destructor) &TrieNode_Destroy)
-
-/* TODO: Move This -- Andrew Hodges (07/07/2010) */
-struct TrieNode {
-    struct TrieNodeBase Node; /* This also is still a struct. DO NOT CHANGE! -- Andrew Hodges (07/07/2010) */
-    TrieNode *Parent;
-    TrieNode *This;
-};
 
 #endif
